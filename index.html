@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanical Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* تخصيص التمرير */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <div class="container mx-auto p-4 flex-grow flex flex-col max-w-4xl">
+        <!-- العنوان -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-400">Smart Mechanical Assistant</h1>
+            <p class="text-gray-400 mt-2">Ask me about any problem with your car, and I will answer you quickly and clearly!</p>
+        </header>
+
+        <!-- منطقة المحادثة -->
+        <div id="chat-container" class="flex-grow bg-gray-800 rounded-lg shadow-lg p-4 overflow-y-auto mb-4">
+            <div id="messages" class="space-y-4"></div>
+        </div>
+
+        <!-- حقل الإدخال وزر الإرسال -->
+        <div class="flex gap-2">
+            <input id="message-input" type="text" placeholder="question.." 
+                   class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400">
+            <button id="send-button" 
+                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        // دالة لإضافة رسالة إلى المحادثة
+        function addMessage(sender, text, bgClass, isLoading = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `p-3 rounded-lg ${bgClass} max-w-[80%] ${sender === 'User' ? 'mr-4' : 'ml-4'}`;
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            if (isLoading) {
+                messageDiv.id = 'loading-message';
+                messageDiv.innerHTML += ' <span class="animate-pulse">...</span>';
+            }
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // دالة لإرسال الرسالة إلى الـ API
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // إضافة رسالة المستخدم
+            addMessage('User', message, 'bg-blue-600');
+            messageInput.value = '';
+            sendButton.disabled = true;
+
+            // إضافة رسالة تحميل
+            addMessage('Assistant', 'Processing', 'bg-gray-600', true);
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+
+                // إزالة رسالة التحميل
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+
+                if (data.response) {
+                    addMessage('Assistant', data.response, 'bg-green-600');
+                } else {
+                    addMessage('Error', data.error, 'bg-red-600');
+                }
+            } catch (error) {
+                // إزالة رسالة التحميل
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+                addMessage('Error', 'Failed to connect to server', 'bg-red-600');
+            }
+            sendButton.disabled = false;
+            messageInput.focus();
+        }
+
+        // التعامل مع زر الإرسال والضغط على Enter
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

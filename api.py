@@ -22,11 +22,6 @@ app.add_middleware(
 # جلسات المحادثة (ذاكرة مؤقتة)
 chat_sessions = {}
 
-# Serve index.html from static/
-@app.get("/", response_class=HTMLResponse)
-async def get_index():
-    return FileResponse("static/index.html")
-
 # API endpoint
 class ChatRequest(BaseModel):
     message: str
@@ -40,6 +35,7 @@ def clean_response(text: str) -> str:
     text = text.strip()
     return text
 
+# نقطة النهاية للمحادثة
 @app.post("/chat")
 async def chat(chat_request: ChatRequest):
     try:
@@ -67,8 +63,8 @@ async def chat(chat_request: ChatRequest):
         chat_completion = client.chat.completions.create(
             messages=chat_sessions[session_id],
             model="gemma-7b-it",
-            max_tokens=300,
-            temperature=0.6,
+            max_tokens=200,
+            temperature=0.7,
         )
 
         # حفظ رد المساعد في السجل

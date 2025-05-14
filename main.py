@@ -137,7 +137,7 @@ async def chat(chat_request: ChatRequest):
         chat_completion = client.chat.completions.create(
             messages=chat_sessions[session_id],
             model="gemma2-9b-it",
-            max_tokens=300,
+            max_tokens=512,
             temperature=0.5,
         )
 

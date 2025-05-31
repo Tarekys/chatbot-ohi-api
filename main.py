@@ -73,7 +73,7 @@ async def start_session():
     chat_sessions[session_id] = [
                 {
                     "role": "system",
-                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل قصيرة وواضحة ومنظمة على شكل نقاط عند الحاجة."
+                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل واضحة ومنظمة على شكل نقاط عند الحاجة."
                 }
     ]
     question_history[session_id] = []
@@ -99,7 +99,7 @@ async def chat(chat_request: ChatRequest):
             chat_sessions[session_id] = [
                 {
                     "role": "system",
-                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل قصيرة وواضحة ومنظمة على شكل نقاط عند الحاجة."
+                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل واضحة ومنظمة على شكل نقاط عند الحاجة."
                 }
             ]
             question_history[session_id] = []
@@ -123,7 +123,7 @@ async def chat(chat_request: ChatRequest):
             chat_sessions[session_id] = [
                 {
                     "role": "system",
-                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل قصيرة وواضحة ومنظمة على شكل نقاط عند الحاجة."
+                    "content": " أنت مساعد ميكانيكي ذكي وخبير في أنظمة السيارات. أجب باللغة العربية بأسلوب وجمل واضحة ومنظمة على شكل نقاط عند الحاجة."
                 }
             ]
 
@@ -136,7 +136,7 @@ async def chat(chat_request: ChatRequest):
         # Call Groq to get response
         chat_completion = client.chat.completions.create(
             messages=chat_sessions[session_id],
-            model="gemma2-9b-it",
+            model="llama3-8b-8192",
             max_tokens=512,
             temperature=0.5,
         )

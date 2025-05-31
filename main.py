@@ -136,7 +136,7 @@ async def chat(chat_request: ChatRequest):
         # Call Groq to get response
         chat_completion = client.chat.completions.create(
             messages=chat_sessions[session_id],
-            model="gemma2-9b-it",
+            model="llama3-70b-8192",
             max_tokens=512,
             temperature=0.5,
         )
